@@ -3,8 +3,10 @@ from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 # Conexión de la biblioteca de bases de datos
 from flask_sqlalchemy import SQLAlchemy
+import os
 from dotenv import load_dotenv
 load_dotenv()
+print("DB URL cargada:", os.environ.get('DATABASE_URL'))
 app = Flask(__name__)
 # Establecer la clave secreta para la sesión.
 app.secret_key = 'my_top_secret_123'
@@ -149,6 +151,9 @@ def profile():
     # Buscamos los datos del usuario
     user = User.query.filter_by(email=email).first()
     return render_template('profile.html', user=user)
+
+with app.app_context():
+    db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)
