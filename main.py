@@ -3,13 +3,19 @@ from flask import Flask, render_template, request, redirect, session
 from werkzeug.security import generate_password_hash, check_password_hash
 # Conexión de la biblioteca de bases de datos
 from flask_sqlalchemy import SQLAlchemy
-
-
+from dotenv import load_dotenv
+load_dotenv()
 app = Flask(__name__)
 # Establecer la clave secreta para la sesión.
 app.secret_key = 'my_top_secret_123'
 # Estableciendo conexión SQLite
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///diary.db'
+db_url = os.environ.get('DATABASE_URL')
+
+# Corregimos el prefijo si viene como postgres:// en vez de postgresql://
+if db_url and db_url.startswith('postgres://'):
+    db_url = db_url.replace('postgres://', 'postgresql://', 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Creando la DB
 db = SQLAlchemy(app)
